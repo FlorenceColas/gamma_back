@@ -15,6 +15,7 @@ class GroupController extends AbstractController
 {
     private const HTTP_STATUS_ERROR = 400;
     private const HTTP_STATUS_SUCCESS = 200;
+    private const VALID_EXTENSION = ['xls', 'xlsx'];
 
     /**
      * @Route("/api/groups/import")
@@ -28,6 +29,13 @@ class GroupController extends AbstractController
         if (!$file || ($file instanceof UploadedFile === false)) {
             return new JsonResponse(
                 ['error_msg' => 'Un fichier est requis.'],
+                $this::HTTP_STATUS_ERROR
+            );
+        }
+
+        if (!\in_array($file->getClientOriginalExtension(), $this::VALID_EXTENSION)) {
+            return new JsonResponse(
+                ['error_msg' => "L'extension " . $file->getClientOriginalExtension() . " n'est pas autorisée."],
                 $this::HTTP_STATUS_ERROR
             );
         }
@@ -56,7 +64,7 @@ class GroupController extends AbstractController
         // Check the mandatory fields are provided
         $columns = $sheetData[1];
         $missing = \array_diff($mandatoryColumns, \array_values($sheetData[1]));
-        if (count($missing) > 0) {
+        if (\count($missing) > 0) {
             return new JsonResponse(
                 [
                     'error_msg' => (\count($missing) > 1
