@@ -15,7 +15,7 @@ class GroupRepository extends ServiceEntityRepository
 
     public function upsert(Group $entity): void
     {
-        /** @var Group $existingGroupEntity */
+        /** @var Group $group */
         $group = $this->findBy(['name' => $entity->getName()], null, 1);
 
         if (isset($group) && !empty($group)) {
@@ -28,7 +28,7 @@ class GroupRepository extends ServiceEntityRepository
             $group[0]->setStyle($entity->getStyle());
             $group[0]->setDescription($entity->getDescription());
 
-            $this->update($group[0]);
+            $this->update();
         } else {
             $this->add($entity);
         }
@@ -40,7 +40,7 @@ class GroupRepository extends ServiceEntityRepository
         $this->getEntityManager()->flush();
     }
 
-    public function update(Group $entity): void
+    public function update(): void
     {
         $this->getEntityManager()->flush();
     }
